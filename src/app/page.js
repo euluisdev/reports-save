@@ -22,12 +22,29 @@ export default function Home() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await fetch('/api/salvar', {
+
+    const { partNumber, partName, semana, solicitante, tecnico, turno, equipamento, motivo } = form;
+
+    if (
+      !partNumber.trim() ||
+      !partName.trim() ||
+      !semana ||
+      !solicitante ||
+      !tecnico ||
+      !turno ||
+      !equipamento ||
+      !motivo
+    ) {
+      console.log("Formulário inválido: preencha todos os campos obrigatórios.");
+      return;
+    }
+
+/*     await fetch('/api/salvar', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
-    });
-    alert('Dados enviados!');
+    }); */
+    console.log('Dados enviados!')
   };
 
   return (
@@ -36,7 +53,7 @@ export default function Home() {
         <h1>CONTROLE DE RELATÓRIOS DIMENSIONAIS</h1>
       </main>
       <form className={styles.formContainer} onSubmit={handleSubmit}>
-        <input className={styles.inputField} name="partNumber" placeholder="Part Number" onChange={handleChange} />
+        <input className={styles.inputField} name="partNumber" placeholder="Part Number"  onChange={handleChange} required />
         <input className={styles.inputField} name="partName" placeholder="Part Name" onChange={handleChange} />
         <select
           className={styles.inputField}
