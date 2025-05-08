@@ -54,7 +54,7 @@ export default function Home() {
       </main>
       <form className={styles.formContainer} onSubmit={handleSubmit}>
         <input className={styles.inputField} name="partNumber" placeholder="Part Number"  onChange={handleChange} required />
-        <input className={styles.inputField} name="partName" placeholder="Part Name" onChange={handleChange} />
+        <input className={styles.inputField} name="partName" placeholder="Part Name" onChange={handleChange} required />
         <select
           className={styles.inputField}
           name="semana"
