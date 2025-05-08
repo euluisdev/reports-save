@@ -6,10 +6,10 @@ import { useState } from 'react';
 export default function Home() {
   const [form, setForm] = useState({
     partNumber: '',
-    descricao: '',
+    partName: '',
     semana: '',
     solicitante: '',
-    metrologista: '',
+    tecnico: '',
     turno: '',
     equipamento: '',
     motivo: '',
