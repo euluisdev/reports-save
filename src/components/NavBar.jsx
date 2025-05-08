@@ -1,7 +1,7 @@
 export default function Navbar() {
     return (
       <nav>
-        <a href="/">Home</a> | <a href="/about">About</a>
+        <a href="/">DashBoard</a> | <a href="/reports">Reports</a>
       </nav>
     );
 }
