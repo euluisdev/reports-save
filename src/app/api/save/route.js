@@ -1,4 +1,3 @@
-// src/app/api/salvar/route.js
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
@@ -7,21 +6,35 @@ import * as XLSX from 'xlsx';
 export async function POST(request) {
   const dados = await request.json();
 
-  // Caminho absoluto para o arquivo Excel (em /public/data)
+  // Caminho para o arquivo Excel
   const filePath = path.join(process.cwd(), 'data', 'relatorios.xlsx');
-
-  // Se o diretório não existir, crie
   const dir = path.dirname(filePath);
+
+  // Garante que o diretório existe
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
 
+  console.log('📁 Caminho do arquivo:', filePath);
+  console.log('📄 Arquivo existe?', fs.existsSync(filePath));
+
   let workbook;
 
-  if (fs.existsSync(filePath)) {
-    workbook = XLSX.readFile(filePath);
-  } else {
-    workbook = XLSX.utils.book_new();
+  // Envolve leitura do arquivo em try/catch para capturar erros detalhados
+  try {
+    if (fs.existsSync(filePath)) {
+      console.log('✅ Arquivo encontrado. Lendo...');
+      workbook = XLSX.readFile(filePath);
+    } else {
+      console.log('⚠️ Arquivo não encontrado. Criando novo workbook...');
+      workbook = XLSX.utils.book_new();
+    }
+  } catch (error) {
+    console.error('❌ Erro ao acessar o arquivo Excel:', error);
+    return NextResponse.json(
+      { error: 'Erro ao acessar o arquivo Excel', detalhe: error.message },
+      { status: 500 }
+    );
   }
 
   const sheetName = 'Registros';
@@ -41,7 +54,19 @@ export async function POST(request) {
     workbook.SheetNames.push(sheetName);
   }
 
-  XLSX.writeFile(workbook, filePath);
+  try {
+    XLSX.writeFile(workbook, filePath);
+    console.log('✅ Dados salvos com sucesso no arquivo Excel.');
+  } catch (error) {
+    console.error('❌ Erro ao salvar o arquivo Excel:', error);
+    return NextResponse.json(
+      { error: 'Erro ao salvar o arquivo Excel', detalhe: error.message },
+      { status: 500 }
+    );
+  }
 
-  return NextResponse.json({ success: true, message: 'Dados salvos com sucesso!' });
+  return NextResponse.json({
+    success: true,
+    message: 'Dados salvos com sucesso!',
+  });
 }
