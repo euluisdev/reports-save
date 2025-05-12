@@ -24,7 +24,7 @@ export async function POST(request) {
   try {
     if (fs.existsSync(filePath)) {
       console.log('✅ Arquivo encontrado. Lendo...');
-      workbook = XLSX.readFile(filePath);
+      workbook = XLSX.readFile(filePath, { type: 'file' });
     } else {
       console.log('⚠️ Arquivo não encontrado. Criando novo workbook...');
       workbook = XLSX.utils.book_new();
