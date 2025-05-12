@@ -1,7 +1,8 @@
 'use client';
 
 import styles from './page.module.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
 
 export default function Home() {
   const [form, setForm] = useState({
@@ -15,6 +16,23 @@ export default function Home() {
     motivo: '',
     observacoes: ''
   });
+  const [showModal, setShowModal] = useState(false);
+
+  const resetForm = () => {
+  setForm({
+    partNumber: '',
+    partName: '',
+    semana: '',
+    solicitante: '',
+    tecnico: '',
+    turno: '',
+    equipamento: '',
+    motivo: '',
+    observacoes: ''
+  });
+  setShowModal(false);
+};
+
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -45,6 +63,7 @@ export default function Home() {
       body: JSON.stringify(form),
     });
     console.log('Dados enviados!')
+    setShowModal(true);
   };
 
   return (
@@ -53,13 +72,13 @@ export default function Home() {
         <h1>CONTROLE DE RELATÓRIOS DIMENSIONAIS</h1>
       </main>
       <form className={styles.formContainer} onSubmit={handleSubmit}>
-        <input className={styles.inputField} name="partNumber" placeholder="Part Number"  onChange={handleChange} required />
-        <input className={styles.inputField} name="partName" placeholder="Part Name" onChange={handleChange} required />
+        <input className={styles.inputField} name="partNumber" placeholder="Part Number" value={form.partNumber} onChange={handleChange} required />
+        <input className={styles.inputField} name="partName" placeholder="Part Name" value={form.partName} onChange={handleChange} required />
         <select
           className={styles.inputField}
-          name="semana"
+          name="semana" 
+          value={form.semana}
           onChange={handleChange}
-          defaultValue=""
         >
           <option value="" disabled>Week</option>
           {Array.from({ length: 52 }, (_, i) => (
@@ -70,9 +89,9 @@ export default function Home() {
         </select>
         <select
           className={styles.inputField}
-          name="solicitante"
+          name="solicitante" 
+          value={form.solicitante}
           onChange={handleChange}
-          defaultValue=""
         >
           <option value="" disabled>Solicitante</option>
           <option value="QUALIDADE">Qualidade</option>
@@ -82,9 +101,9 @@ export default function Home() {
         </select>
         <select
           className={styles.inputField}
-          name="tecnico"
+          name="tecnico" 
+          value={form.tecnico}
           onChange={handleChange}
-          defaultValue=""
         >
           <option value="" disabled>Técnico</option>
           <option value="izaac">Izaac</option>
@@ -93,9 +112,9 @@ export default function Home() {
         </select>
         <select
           className={styles.inputField}
-          name="turno"
+          name="turno" 
+          value={form.turno}
           onChange={handleChange}
-          defaultValue=""
         >
           <option value="" disabled>Selecione o turno</option>
           <option value="1º TURNO">Primeiro Turno</option>
@@ -105,9 +124,9 @@ export default function Home() {
         </select>
         <select
           className={styles.inputField}
-          name="equipamento"
+          name="equipamento" 
+          value={form.equipamento}
           onChange={handleChange}
-          defaultValue=""
         >
           <option value="" disabled>Selecione o Equipamento</option>
           <option value="METRASCAN">MetraScan</option>
@@ -117,9 +136,9 @@ export default function Home() {
         </select>
         <select
           className={styles.inputField}
-          name="motivo"
+          name="motivo" 
+          value={form.motivo}
           onChange={handleChange}
-          defaultValue=""
         >
           <option value="" disabled>Motivo da Medição</option>
           <option value="ANÁLISE">Análise</option>
@@ -131,11 +150,21 @@ export default function Home() {
         <textarea
           className={`${styles.inputField} ${styles.fullWidth}`}
           name="observacoes"
+          value={form.observacoes}
           placeholder="Observações"
           onChange={handleChange}
         />
 
         <button className={styles.button} type="submit">Enviar</button>
+
+        {showModal && (
+          <div className={styles.modalOverlay}>
+            <div className={styles.modal}>
+              <p>Seus dados foram salvos com sucesso!</p>
+              <button onClick={resetForm}>OK</button>
+            </div>
+          </div>
+        )}
       </form>
     </>
   );
