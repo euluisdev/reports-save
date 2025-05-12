@@ -1,3 +1,6 @@
+export const runtime = 'nodejs';
+
+
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
@@ -7,7 +10,7 @@ export async function POST(request) {
   const dados = await request.json();
 
   // Caminho para o arquivo Excel
-  const filePath = path.join(process.cwd(), 'data', 'relatorios.xlsx');
+  const filePath = path.resolve('data', 'relatorios.xlsx');
   const dir = path.dirname(filePath);
 
   // Garante que o diretório existe
@@ -20,22 +23,24 @@ export async function POST(request) {
 
   let workbook;
 
-  // Envolve leitura do arquivo em try/catch para capturar erros detalhados
   try {
     if (fs.existsSync(filePath)) {
-      console.log('✅ Arquivo encontrado. Lendo...');
-      workbook = XLSX.readFile(filePath, { type: 'file' });
+      try {
+        workbook = XLSX.readFile(filePath);
+        console.log('✅ Arquivo lido com sucesso');
+      } catch (readError) {
+        console.warn('⚠️ Arquivo existente, mas ilegível. Criando novo.');
+        workbook = XLSX.utils.book_new();
+      }
     } else {
-      console.log('⚠️ Arquivo não encontrado. Criando novo workbook...');
+      console.log('📄 Arquivo não encontrado. Criando novo workbook...');
       workbook = XLSX.utils.book_new();
     }
-  } catch (error) {
-    console.error('❌ Erro ao acessar o arquivo Excel:', error);
-    return NextResponse.json(
-      { error: 'Erro ao acessar o arquivo Excel', detalhe: error.message },
-      { status: 500 }
-    );
+  } catch (fsError) {
+    console.error('❌ Erro inesperado com o arquivo:', fsError.message);
+    return NextResponse.json({ error: 'Erro ao acessar o arquivo Excel' }, { status: 500 });
   }
+
 
   const sheetName = 'Registros';
   let worksheet = workbook.Sheets[sheetName];
