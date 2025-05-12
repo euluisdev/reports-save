@@ -100,15 +100,13 @@
   }
 }
 
-/* Full width class for textarea and other elements */
 .fullWidth {
   grid-column: 1 / -1;
-  height: 120px; /* Fixed height for textarea */
-  resize: none;  /* Allow vertical resizing only */
+  height: 120px; 
+  resize: none;  
   overflow-y: auto;
 }
 
-/* Grid layout for larger screens */
 @media (min-width: 768px) {
   form.formContainer {
     display: grid;
@@ -124,4 +122,41 @@
     grid-column: 1 / span 2;
     margin-top: 1rem;
   }
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6); /* escurece o fundo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: var(--gray-medium);
+  color: var(--white);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: var(--box-shadow);
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+.modal button {
+  margin-top: 1.5rem;
+  padding: 0.6rem 1.2rem;
+  background-color: var(--primary-green);
+  border: none;
+  color: var(--white);
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.modal button:hover {
+  background-color: var(--primary-green-dark);
 }
