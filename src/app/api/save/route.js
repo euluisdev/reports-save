@@ -2,76 +2,69 @@ export const runtime = 'nodejs';
 
 
 import { NextResponse } from 'next/server';
-import fs from 'fs';
+import { promises as fs } from 'fs';
 import path from 'path';
 import * as XLSX from 'xlsx';
 
-export async function POST(request) {
-  const dados = await request.json();
-
-  // Caminho para o arquivo Excel
-  const filePath = path.resolve('data', 'relatorios.xlsx');
-  const dir = path.dirname(filePath);
-
-  // Garante que o diretório existe
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-
-  console.log('📁 Caminho do arquivo:', filePath);
-  console.log('📄 Arquivo existe?', fs.existsSync(filePath));
-
-  let workbook;
+export async function POST(req) {
+  const filePath = path.join(process.cwd(), 'data', 'relatorios.xlsx');
 
   try {
-    if (fs.existsSync(filePath)) {
-      try {
-        workbook = XLSX.readFile(filePath);
-        console.log('✅ Arquivo lido com sucesso');
-      } catch (readError) {
-        console.warn('⚠️ Arquivo existente, mas ilegível. Criando novo.');
-        workbook = XLSX.utils.book_new();
-      }
-    } else {
-      console.log('📄 Arquivo não encontrado. Criando novo workbook...');
+    const formData = await req.json(); // Dados recebidos do formulário
+    console.log(formData);
+
+    // Verifica se o arquivo já existe
+    let workbook;
+    let worksheet;
+    try {
+      await fs.access(filePath); // Testa se o arquivo existe
+      const fileBuffer = await fs.readFile(filePath);
+      workbook = XLSX.read(fileBuffer, { type: 'buffer' });
+      worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    } catch (error) {
+      // Cria novo workbook com cabeçalhos se o arquivo não existir
       workbook = XLSX.utils.book_new();
+      const headers = [
+        "Part Number", "Part Name", "Semana", "Solicitante",
+        "Técnico", "Turno", "Equipamento", "Motivo", "Observações"
+      ];
+      const newSheet = XLSX.utils.aoa_to_sheet([headers]);
+      XLSX.utils.book_append_sheet(workbook, newSheet, "Relatórios");
+      worksheet = workbook.Sheets["Relatórios"];
     }
-  } catch (fsError) {
-    console.error('❌ Erro inesperado com o arquivo:', fsError.message);
-    return NextResponse.json({ error: 'Erro ao acessar o arquivo Excel' }, { status: 500 });
-  }
 
+    // Converte a planilha para JSON
+    const existingData = XLSX.utils.sheet_to_json(worksheet);
 
-  const sheetName = 'Registros';
-  let worksheet = workbook.Sheets[sheetName];
-  const existingData = worksheet ? XLSX.utils.sheet_to_json(worksheet) : [];
+    // Adiciona os dados do formulário
+    existingData.push({
+      "Part Number": formData.partNumber,
+      "Part Name": formData.partName,
+      "Semana": formData.semana,
+      "Solicitante": formData.solicitante,
+      "Técnico": formData.tecnico,
+      "Turno": formData.turno,
+      "Equipamento": formData.equipamento,
+      "Motivo": formData.motivo,
+      "Observações": formData.observacoes,
+    });
 
-  const novaEntrada = {
-    DataHora: new Date().toLocaleString('pt-BR'),
-    ...dados,
-  };
+    // Cria nova planilha com os dados atualizados
+    const updatedSheet = XLSX.utils.json_to_sheet(existingData, { skipHeader: false });
+    const updatedWorkbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(updatedWorkbook, updatedSheet, "Relatórios");
 
-  const updatedData = [...existingData, novaEntrada];
-  const newSheet = XLSX.utils.json_to_sheet(updatedData);
+    // Salva o arquivo atualizado
+    const updatedBuffer = XLSX.write(updatedWorkbook, { type: 'buffer', bookType: 'xlsx' });
+    await fs.writeFile(filePath, updatedBuffer);
 
-  workbook.Sheets[sheetName] = newSheet;
-  if (!workbook.SheetNames.includes(sheetName)) {
-    workbook.SheetNames.push(sheetName);
-  }
+    return new Response(JSON.stringify({ success: true }), { status: 200 });
 
-  try {
-    XLSX.writeFile(workbook, filePath);
-    console.log('✅ Dados salvos com sucesso no arquivo Excel.');
   } catch (error) {
-    console.error('❌ Erro ao salvar o arquivo Excel:', error);
-    return NextResponse.json(
-      { error: 'Erro ao salvar o arquivo Excel', detalhe: error.message },
-      { status: 500 }
-    );
+    console.error("Erro ao salvar no Excel:", error);
+    return new Response(JSON.stringify({ error: "Erro ao salvar no Excel" }), { status: 500 });
   }
-
-  return NextResponse.json({
-    success: true,
-    message: 'Dados salvos com sucesso!',
-  });
 }
+
+
+
