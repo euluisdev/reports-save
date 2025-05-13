@@ -1,5 +1,5 @@
 :root {
-  --primary-green: #1fb36a;
+  --primary-green: #0e5718;
   --primary-green-light: #25d37d;
   --primary-green-dark: #149c54;
   --white: #ffffff;
@@ -30,6 +30,10 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 body {

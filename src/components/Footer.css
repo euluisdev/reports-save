@@ -2,11 +2,13 @@
 .footer-container {
   background-color: #1d1d1d;
   color: #FFFFFF;
-  padding: 0.5rem 1rem 0.5rem 1rem;
+  padding: 2.5rem 0rem;
   display: flex;
-  margin-top: 3rem;
+  justify-content: center;
+  align-items: center;   
   width: 100%;
-
+  flex-direction: column;  
+  margin-top: 3rem;
 }
 
 .footer-icons a {
@@ -21,7 +23,6 @@
 
 .developed {
   font-size: 0.8rem;
-  margin-bottom: 2rem;
   justify-content: center;
   text-align: center;
 }
