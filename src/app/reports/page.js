@@ -30,6 +30,7 @@ export default function VisualizarDados() {
       <table border="1" cellPadding="8">
         <thead>
           <tr>
+            <th>Número de Relatório</th>
             <th>Part Number</th>
             <th>Part Name</th>
             <th>Semana</th>
@@ -44,6 +45,7 @@ export default function VisualizarDados() {
         <tbody>
           {dados.map((linha, index) => (
             <tr key={index}>
+              <td>{linha["Número de Relatório"]}</td>
               <td>{linha["Part Number"]}</td>
               <td>{linha["Part Name"]}</td>
               <td>{linha["Semana"]}</td>
