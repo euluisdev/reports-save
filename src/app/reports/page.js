@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import styles from './reports.module.css';
 
 export default function VisualizarDados() {
   const [dados, setDados] = useState([]);
@@ -9,7 +10,7 @@ export default function VisualizarDados() {
   useEffect(() => {
     const buscarDados = async () => {
       try {
-        const response = await fetch('/api/display'); // endpoint GET
+        const response = await fetch('/api/display');
         const data = await response.json();
         setDados(data);
       } catch (err) {
@@ -25,9 +26,9 @@ export default function VisualizarDados() {
   if (carregando) return <p>Carregando...</p>;
 
   return (
-    <div style={{ padding: "1rem" }}>
-      <h1>Relatórios Registrados</h1>
-      <table border="1" cellPadding="8">
+    <div className={styles.container}>
+      <h1 className={styles.title}>Relatórios Registrados</h1>
+      <table className={styles.table}>
         <thead>
           <tr>
             <th>Número de Relatório</th>
@@ -62,3 +63,4 @@ export default function VisualizarDados() {
     </div>
   );
 }
+

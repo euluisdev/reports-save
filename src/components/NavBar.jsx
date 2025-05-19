@@ -11,6 +11,7 @@ export default function Navbar() {
         <nav className="nav-links">
           <a href="/">Register</a>
           <a href="/reports">Reports</a>
+          <a href="/graphics">graphics</a>
         </nav>
       </div>
     </header>

@@ -141,11 +141,20 @@ export default function Home() {
           onChange={handleChange}
         >
           <option value="" disabled>Motivo da Medição</option>
-          <option value="ANÁLISE">Análise</option>
-          <option value="ACOMPANHAMENTO">Acomp produção</option>
+          <option value="ANÁLISE DIMENSIONAL">Análise Dimensional</option>
+          <option value="ACOMP PRODUÇÃO 1/400">Acomp produção 1/400</option>
           <option value="PPAP">PPAP</option>
           <option value="TRYOUT">Try Out</option>
+          <option value="CRIAÇÃO PROGRAMA">Criação de Programa</option>
+          <option value="ODM">Alteração de ODM</option>
           <option value="GEOMETRIA">Conform Geométrica</option>
+          <option value="PROBLEMA PRODUÇÃO">Problemas de Linha</option>
+          <option value="LAMENTAÇÃO CLIENTE">Lamentação Cliente</option>
+          <option value="INSP LAYOUT">Insp LayOut - Produto</option>
+          <option value="INSP DISPOSITIVO">Insp Dispositivo</option>
+          <option value="REDUÇÃO BLANK">Redução do Blank</option>
+          <option value="DISP SOLDA">Dispositivo de Solda</option>
+
         </select>
         <textarea
           className={`${styles.inputField} ${styles.fullWidth}`}
