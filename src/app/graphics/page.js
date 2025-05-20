@@ -124,7 +124,7 @@ export default function GraficosPage() {
       {
         label: 'Controles por Semana',
         data: semanaEntries.map(entry => entry[1]),
-        backgroundColor: '#36A2EB',
+        backgroundColor: '#219b11',
       },
     ],
   };
@@ -189,49 +189,54 @@ export default function GraficosPage() {
   };
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>Quantidade de Medições X Motivos da Medição</h2>
+    <>
+      <div ref={containerRef} className={styles.container}>
+        <h2 className={styles.title}>Quantidade de Medições X Motivos da Medição</h2>
 
-      <div className={styles.filtroContainer}>
-        <label htmlFor="semanaSelect" className={styles.filtroLabel}>Filtrar por Semana:</label>
-        <select
-          id="semanaSelect"
-          className={styles.filtroSelect}
-          value={semanaSelecionada}
-          onChange={e => setSemanaSelecionada(e.target.value)}
-        >
-          <option value="">Todas</option>
-          {semanasUnicas.map(semana => (
-            <option key={semana} value={semana}>{semana}</option>
-          ))}
-        </select>
-      </div>
-
-      <div ref={containerRef}>
-        <div className={styles.graficoPizzaContainer}>
-          <Pie data={pieData} options={pieOptions} />
-          <div className={styles.legenda}>
-            {pieData.labels.map((label, index) => (
-              <div key={label} className={styles.legendaItem}>
-                <span
-                  className={styles.corQuadrado}
-                  style={{ backgroundColor: pieData.datasets[0].backgroundColor[index] }}
-                ></span>
-                <span>{label}</span>
-              </div>
+        <div className={styles.filtroContainer}>
+          <label htmlFor="semanaSelect" className={styles.filtroLabel}>Filtrar por Semana:</label>
+          <select
+            id="semanaSelect"
+            className={styles.filtroSelect}
+            value={semanaSelecionada}
+            onChange={e => setSemanaSelecionada(e.target.value)}
+          >
+            <option value="">Todas</option>
+            {semanasUnicas.map(semana => (
+              <option key={semana} value={semana}>Week {semana}</option>
             ))}
+          </select>
+          <div className={styles.totalContainer}>
+            Total de Medições: <span className={styles.totalValor}>{total}</span>
           </div>
         </div>
 
-        <h2 className={styles.titleTwo}>Controles por Semana</h2>
-        <Bar data={barData} options={barOptions} />
-      </div>
+        <div>
+          <div className={styles.graficoPizzaContainer}>
+            <Pie data={pieData} options={pieOptions} />
+            <div className={styles.legenda}>
+              {pieData.labels.map((label, index) => (
+                <div key={label} className={styles.legendaItem}>
+                  <span
+                    className={styles.corQuadrado}
+                    style={{ backgroundColor: pieData.datasets[0].backgroundColor[index] }}
+                  ></span>
+                  <span>{label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
 
+          <h2 className={styles.titleTwo}>Controles por Semana</h2>
+          <Bar data={barData} options={barOptions} />
+        </div>
+        <div className={styles.dataAtual}>Igarassu, {formatarDataAtual()}</div>
+      </div>
+      <div>
       <button onClick={handleImprimirPDF} className={styles.btnPrint}>
         Export PDF
       </button>
-
-      <div className={styles.dataAtual}>{formatarDataAtual()}</div>
-    </div>
+      </div>
+    </>
   );
 }

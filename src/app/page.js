@@ -16,22 +16,23 @@ export default function Home() {
     motivo: '',
     observacoes: ''
   });
+  const [numeroRelatorio, setNumeroRelatorio] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
   const resetForm = () => {
-  setForm({
-    partNumber: '',
-    partName: '',
-    semana: '',
-    solicitante: '',
-    tecnico: '',
-    turno: '',
-    equipamento: '',
-    motivo: '',
-    observacoes: ''
-  });
-  setShowModal(false);
-};
+    setForm({
+      partNumber: '',
+      partName: '',
+      semana: '',
+      solicitante: '',
+      tecnico: '',
+      turno: '',
+      equipamento: '',
+      motivo: '',
+      observacoes: ''
+    });
+    setShowModal(false);
+  };
 
 
   const handleChange = (e) => {
@@ -57,12 +58,15 @@ export default function Home() {
       return;
     }
 
-    await fetch('/api/save', {
+    const response = await fetch('/api/save', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
     });
     console.log('Dados enviados!')
+    
+    const result = await response.json();
+    setNumeroRelatorio(result.numeroRelatorio);
     setShowModal(true);
   };
 
@@ -76,7 +80,7 @@ export default function Home() {
         <input className={styles.inputField} name="partName" placeholder="Part Name" value={form.partName} onChange={handleChange} required />
         <select
           className={styles.inputField}
-          name="semana" 
+          name="semana"
           value={form.semana}
           onChange={handleChange}
         >
@@ -89,7 +93,7 @@ export default function Home() {
         </select>
         <select
           className={styles.inputField}
-          name="solicitante" 
+          name="solicitante"
           value={form.solicitante}
           onChange={handleChange}
         >
@@ -101,7 +105,7 @@ export default function Home() {
         </select>
         <select
           className={styles.inputField}
-          name="tecnico" 
+          name="tecnico"
           value={form.tecnico}
           onChange={handleChange}
         >
@@ -112,7 +116,7 @@ export default function Home() {
         </select>
         <select
           className={styles.inputField}
-          name="turno" 
+          name="turno"
           value={form.turno}
           onChange={handleChange}
         >
@@ -124,7 +128,7 @@ export default function Home() {
         </select>
         <select
           className={styles.inputField}
-          name="equipamento" 
+          name="equipamento"
           value={form.equipamento}
           onChange={handleChange}
         >
@@ -136,7 +140,7 @@ export default function Home() {
         </select>
         <select
           className={styles.inputField}
-          name="motivo" 
+          name="motivo"
           value={form.motivo}
           onChange={handleChange}
         >
@@ -170,6 +174,7 @@ export default function Home() {
           <div className={styles.modalOverlay}>
             <div className={styles.modal}>
               <p>Seus dados foram salvos com sucesso!</p>
+              <p><strong>Número do Relatório:</strong> {numeroRelatorio}</p>
               <button onClick={resetForm}>OK</button>
             </div>
           </div>
