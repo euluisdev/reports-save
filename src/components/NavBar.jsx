@@ -9,9 +9,9 @@ export default function Navbar() {
           <span>METROLOGIA IEB-PE</span>
         </div>
         <nav className="nav-links">
-          <a href="/">Register</a>
-          <a href="/reports">Reports</a>
-          <a href="/graphics">graphics</a>
+          <a href="/">REGISTER</a>
+          <a href="/reports">REPORTS</a>
+          <a href="/graphics">GRAPHICS</a>
         </nav>
       </div>
     </header>
