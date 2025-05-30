@@ -9,7 +9,7 @@ export async function POST(req) {
   const filePath = path.join(process.cwd(), 'data', 'relatorios.xlsx');
 
   try {
-    const formData = await req.json(); 
+    const formData = await req.json();
     console.log(formData);
 
     let workbook;
@@ -26,7 +26,7 @@ export async function POST(req) {
     } catch (error) {
       workbook = XLSX.utils.book_new();
       const headers = [
-        "Número de Relatório", "Part Number", "Part Name", "Semana", "Solicitante",
+        "Número de Relatório", "DataHoraCadastro", "Part Number", "Part Name", "Semana", "Solicitante",
         "Técnico", "Turno", "Equipamento", "Motivo", "Observações"
       ];
 
@@ -43,7 +43,7 @@ export async function POST(req) {
     existingData.forEach((item) => {
       const codigo = item["Número de Relatório"];
       if (typeof codigo === "string" && codigo.startsWith(prefixo)) {
-        const numeroStr = codigo.split('.')[1]; 
+        const numeroStr = codigo.split('.')[1];
         const numero = parseInt(numeroStr, 10);
         if (!isNaN(numero) && numero > maxNumero) {
           maxNumero = numero;
@@ -52,8 +52,14 @@ export async function POST(req) {
     });
     const numeroRelatorio = `${prefixo}${String(maxNumero + 1).padStart(4, '0')}`;
 
+    const now = new Date();
+    const dateFormated = now.toLocaleDateString('pt-BR');
+    const hourFormated = now.toLocaleTimeString('pt-BR', { hour12: false });
+    const dateHourFormated = `${dateFormated} - ${hourFormated}`;
+
     const novoRelatorio = {
       "Número de Relatório": numeroRelatorio,
+      "DataHoraCadastro": dateHourFormated,
       "Part Number": formData.partNumber,
       "Part Name": formData.partName,
       "Semana": formData.semana,
@@ -66,7 +72,7 @@ export async function POST(req) {
     };
 
     existingData.push(novoRelatorio);
-    
+
     const updatedSheet = XLSX.utils.json_to_sheet(existingData, { skipHeader: false });
     const updatedWorkbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(updatedWorkbook, updatedSheet, "Relatórios");

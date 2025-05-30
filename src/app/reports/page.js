@@ -1,11 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './reports.module.css';
 
 export default function VisualizarDados() {
   const [dados, setDados] = useState([]);
   const [carregando, setCarregando] = useState(true);
+  const [filtroData, setFiltroData] = useState('');
+  const [mostrarCalendario, setMostrarCalendario] = useState(false);
+  const calendarioRef = useRef(null);
 
   useEffect(() => {
     const buscarDados = async () => {
@@ -23,44 +26,111 @@ export default function VisualizarDados() {
     buscarDados();
   }, []);
 
+  useEffect(() => {
+    const fecharFora = (e) => {
+      if (calendarioRef.current && !calendarioRef.current.contains(e.target)) {
+        setMostrarCalendario(false);
+      }
+    };
+    document.addEventListener('mousedown', fecharFora);
+    return () => document.removeEventListener('mousedown', fecharFora);
+  }, []);
+
+  const dadosFiltrados = dados.filter((linha) => {
+    if (!filtroData) return true;
+    const dataString = linha["DataHoraCadastro"]?.split(' - ')[0];
+    if (!dataString) return false;
+    const dataFormatada = dataString.split('/').reverse().join('-');
+    return dataFormatada === filtroData;
+  });
+
+  const ultimos30 = dadosFiltrados.slice(-30);
+
   if (carregando) return <p>Carregando...</p>;
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Relatórios Registrados</h1>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>Número de Relatório</th>
-            <th>Part Number</th>
-            <th>Part Name</th>
-            <th>Semana</th>
-            <th>Solicitante</th>
-            <th>Técnico</th>
-            <th>Turno</th>
-            <th>Equipamento</th>
-            <th>Motivo</th>
-            <th>Observações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {dados.map((linha, index) => (
-            <tr key={index}>
-              <td>{linha["Número de Relatório"]}</td>
-              <td>{linha["Part Number"]}</td>
-              <td>{linha["Part Name"]}</td>
-              <td>{linha["Semana"]}</td>
-              <td>{linha["Solicitante"]}</td>
-              <td>{linha["Técnico"]}</td>
-              <td>{linha["Turno"]}</td>
-              <td>{linha["Equipamento"]}</td>
-              <td>{linha["Motivo"]}</td>
-              <td>{linha["Observações"]}</td>
+      <h1 className={styles.title}>Controle de Atividades da Metrologia</h1>
+
+      <div className={styles.tabelaContainer}>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>Número de Relatório</th>
+              <th className={styles.thComCalendario}>
+                Data
+                <span
+                  className={styles.seta}
+                  onClick={() => setMostrarCalendario(!mostrarCalendario)}
+                >
+                  ▼
+                </span>
+                {mostrarCalendario && (
+                  <div className={styles.dropdown} ref={calendarioRef}>
+                    <div className={styles.inputWrapper}>
+                      <input
+                        type="date"
+                        className={styles.inputDate}
+                        value={filtroData}
+                        onChange={(e) => {
+                          setFiltroData(e.target.value);
+                          setMostrarCalendario(false);
+                        }}
+                      />
+                      {filtroData && (
+                        <button
+                          className={styles.clearButton}
+                          onClick={() => {
+                            setFiltroData('');
+                            setMostrarCalendario(false);
+                          }}
+                          title="Limpar filtro"
+                        >
+                          ❌
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </th>
+              <th>Part Number</th>
+              <th>Part Name</th>
+              <th>Semana</th>
+              <th>Solicitante</th>
+              <th>Técnico</th>
+              <th>Turno</th>
+              <th>Equipamento</th>
+              <th>Motivo</th>
+              <th>Observações</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {ultimos30.length === 0 ? (
+              <tr>
+                <td colSpan={11} className={styles.semDados}>
+                  Nenhum relatório encontrado para a data selecionada. Tente outra data.
+                </td>
+              </tr>
+            ) : (
+              ultimos30.map((linha, index) => (
+                <tr key={index}>
+                  <td>{linha["Número de Relatório"]}</td>
+                  <td>{linha["DataHoraCadastro"]}</td>
+                  <td>{linha["Part Number"]}</td>
+                  <td>{linha["Part Name"]}</td>
+                  <td>{linha["Semana"]}</td>
+                  <td>{linha["Solicitante"]}</td>
+                  <td>{linha["Técnico"]}</td>
+                  <td>{linha["Turno"]}</td>
+                  <td>{linha["Equipamento"]}</td>
+                  <td>{linha["Motivo"]}</td>
+                  <td>{linha["Observações"]}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
-
