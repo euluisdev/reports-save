@@ -5,6 +5,12 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import * as XLSX from 'xlsx';
 
+function excelDateToJSDate(excelDate) {
+  const date = new Date((excelDate - 25569) * 86400 * 1000);
+  const offset = date.getTimezoneOffset();
+  return new Date(date.getTime() + offset * 60 * 1000);
+}
+
 export async function POST(req) {
   const filePath = path.join(process.cwd(), 'data', 'relatorios.xlsx');
 
@@ -23,13 +29,21 @@ export async function POST(req) {
       worksheet = workbook.Sheets[workbook.SheetNames[0]];
       existingData = XLSX.utils.sheet_to_json(worksheet);
 
+      existingData = existingData.map(item => {
+        const originalValue = item["DataHoraCadastro"];
+        if (typeof originalValue === "number") {
+          const dataConvertida = excelDateToJSDate(originalValue);
+          item["DataHoraCadastro"] = dataConvertida.toLocaleString('pt-BR');
+        }
+        return item;
+      });
+
     } catch (error) {
       workbook = XLSX.utils.book_new();
       const headers = [
         "Número de Relatório", "DataHoraCadastro", "Part Number", "Part Name", "Semana", "Solicitante",
         "Técnico", "Turno", "Equipamento", "Motivo", "Observações"
       ];
-
       const newSheet = XLSX.utils.aoa_to_sheet([headers]);
       XLSX.utils.book_append_sheet(workbook, newSheet, "Relatórios");
       worksheet = workbook.Sheets["Relatórios"];
@@ -50,6 +64,7 @@ export async function POST(req) {
         }
       }
     });
+
     const numeroRelatorio = `${prefixo}${String(maxNumero + 1).padStart(4, '0')}`;
 
     const now = new Date();

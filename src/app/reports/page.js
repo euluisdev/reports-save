@@ -10,6 +10,18 @@ export default function VisualizarDados() {
   const [mostrarCalendario, setMostrarCalendario] = useState(false);
   const calendarioRef = useRef(null);
 
+  function excelSerialDateToJSDate(serial) {
+    const excelEpoch = new Date(1899, 11, 30);
+    const date = new Date(excelEpoch.getTime() + serial * 86400 * 1000);
+    return date.toLocaleDateString('pt-BR') + ' - ' + date.toLocaleTimeString('pt-BR');
+  }
+
+  function formatarDataParaInput(date) {
+    return date.getFullYear() + '-' +
+      String(date.getMonth() + 1).padStart(2, '0') + '-' +
+      String(date.getDate()).padStart(2, '0');
+  }
+
   useEffect(() => {
     const buscarDados = async () => {
       try {
@@ -38,10 +50,23 @@ export default function VisualizarDados() {
 
   const dadosFiltrados = dados.filter((linha) => {
     if (!filtroData) return true;
-    const dataString = linha["DataHoraCadastro"]?.split(' - ')[0];
-    if (!dataString) return false;
-    const dataFormatada = dataString.split('/').reverse().join('-');
-    return dataFormatada === filtroData;
+
+    let dataString = linha["DataHoraCadastro"];
+
+    if (typeof dataString === 'number') {
+      const excelEpoch = new Date(1899, 11, 30);
+      const date = new Date(excelEpoch.getTime() + dataString * 86400 * 1000);
+      const dataFormatada = formatarDataParaInput(date);
+      return dataFormatada === filtroData;
+    }
+
+    if (typeof dataString === 'string') {
+      const dataParte = dataString.split(' - ')[0];
+      const dataFormatada = dataParte.split('/').reverse().join('-');
+      return dataFormatada === filtroData;
+    }
+
+    return false;
   });
 
   const ultimos30 = dadosFiltrados.slice(-30);
@@ -115,7 +140,11 @@ export default function VisualizarDados() {
               ultimos30.map((linha, index) => (
                 <tr key={index}>
                   <td>{linha["Número de Relatório"]}</td>
-                  <td>{linha["DataHoraCadastro"]}</td>
+                  <td>
+                    {typeof linha["DataHoraCadastro"] === 'number'
+                      ? excelSerialDateToJSDate(linha["DataHoraCadastro"])
+                      : linha["DataHoraCadastro"]}
+                  </td>
                   <td>{linha["Part Number"]}</td>
                   <td>{linha["Part Name"]}</td>
                   <td>{linha["Semana"]}</td>
