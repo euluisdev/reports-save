@@ -28,9 +28,26 @@ export default function Home() {
     else if (horas >= 18) saudacaoHora = 'Boa noite';
 
     const opcoes = { day: '2-digit', month: 'short', year: 'numeric' };
-    const dataFormatada = dataAtual.toLocaleDateString('pt-BR', opcoes).replace('.', '');
+    const dataFormatada = dataAtual
+      .toLocaleDateString('pt-BR', opcoes)
+      .replace('.', '');
 
-    setSaudacao(`${saudacaoHora}! Hoje é ${dataFormatada}`);
+    const mensagemCompleta = `${saudacaoHora}! Hoje é ${dataFormatada}`;
+
+    let index = 0;
+    let textoParcial = '';
+
+    const intervalo = setInterval(() => {
+      if (index < mensagemCompleta.length) {
+        textoParcial += mensagemCompleta[index];
+        setSaudacao(textoParcial);
+        index++;
+      } else {
+        clearInterval(intervalo);
+      }
+    }, 60);
+
+    return () => clearInterval(intervalo);
   }, []);
 
   const resetForm = () => {
@@ -86,7 +103,9 @@ export default function Home() {
     <>
       <main className={styles.formContainer}>
         <h1>CONTROLE DE RELATÓRIOS DIMENSIONAIS</h1>
-        <p>{saudacao}</p>
+        <div style={{ textAlign: 'center' }}>
+          <p className={styles.saudacao}>{saudacao}</p>
+        </div>
       </main>
 
       <form className={styles.formContainer} onSubmit={handleSubmit}>
@@ -150,17 +169,37 @@ export default function Home() {
 
         <textarea className={`${styles.inputField} ${styles.fullWidth}`} name="observacoes" value={form.observacoes} placeholder="Observações" onChange={handleChange} />
 
-        <button className={styles.button} type="submit">Enviar</button>
+        <button className={styles.button} type="submit">Salvar</button>
 
         {showModal && (
           <div className={styles.modalOverlay}>
             <div className={styles.modal}>
               <p>Seus dados foram salvos com sucesso!</p>
-              <p><strong>Número do Relatório:</strong> {numeroRelatorio}</p>
+              <p>
+                <strong>Número do Relatório:</strong> {numeroRelatorio}
+                <button
+                  type="button"
+                  onClick={() => navigator.clipboard.writeText(numeroRelatorio)}
+                  style={{
+                    marginLeft: '10px',
+                    padding: '4px 8px',
+                    fontSize: '0.9rem',
+                    cursor: 'pointer',
+                    backgroundColor: 'var(--primary-green)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px'
+                  }}
+                >
+                  Copiar
+                </button>
+
+              </p>
               <button onClick={resetForm}>OK</button>
             </div>
           </div>
         )}
+
       </form>
     </>
   );
