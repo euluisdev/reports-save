@@ -53,8 +53,9 @@
 
 .table th,
 .table td {
-  padding: 9px 10px;
+  padding: 7px 3px;
   text-align: center;
+  font-size: 0.8rem;
 }
 
 .table th {
@@ -82,7 +83,7 @@
 
 .seta {
   cursor: pointer;
-  font-size: 12px;
+  font-size: 15px;
   margin-left: 6px;
 }
 

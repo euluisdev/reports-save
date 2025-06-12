@@ -3,7 +3,6 @@
 import styles from './page.module.css';
 import { useState, useEffect } from 'react';
 
-
 export default function Home() {
   const [form, setForm] = useState({
     partNumber: '',
@@ -18,6 +17,38 @@ export default function Home() {
   });
   const [numeroRelatorio, setNumeroRelatorio] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [saudacao, setSaudacao] = useState('');
+
+  useEffect(() => {
+    const dataAtual = new Date();
+    const horas = dataAtual.getHours();
+
+    let saudacaoHora = 'Bom dia';
+    if (horas >= 12 && horas < 18) saudacaoHora = 'Boa tarde';
+    else if (horas >= 18) saudacaoHora = 'Boa noite';
+
+    const opcoes = { day: '2-digit', month: 'short', year: 'numeric' };
+    const dataFormatada = dataAtual
+      .toLocaleDateString('pt-BR', opcoes)
+      .replace('.', '');
+
+    const mensagemCompleta = `${saudacaoHora}! Hoje é ${dataFormatada}`;
+
+    let index = 0;
+    let textoParcial = '';
+
+    const intervalo = setInterval(() => {
+      if (index < mensagemCompleta.length) {
+        textoParcial += mensagemCompleta[index];
+        setSaudacao(textoParcial);
+        index++;
+      } else {
+        clearInterval(intervalo);
+      }
+    }, 60);
+
+    return () => clearInterval(intervalo);
+  }, []);
 
   const resetForm = () => {
     setForm({
@@ -33,7 +64,6 @@ export default function Home() {
     });
     setShowModal(false);
   };
-
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -63,8 +93,7 @@ export default function Home() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
     });
-    console.log('Dados enviados!')
-    
+
     const result = await response.json();
     setNumeroRelatorio(result.numeroRelatorio);
     setShowModal(true);
@@ -74,76 +103,54 @@ export default function Home() {
     <>
       <main className={styles.formContainer}>
         <h1>CONTROLE DE RELATÓRIOS DIMENSIONAIS</h1>
+        <div style={{ textAlign: 'center' }}>
+          <p className={styles.saudacao}>{saudacao}</p>
+        </div>
       </main>
+
       <form className={styles.formContainer} onSubmit={handleSubmit}>
         <input className={styles.inputField} name="partNumber" placeholder="Part Number" value={form.partNumber} onChange={handleChange} required />
         <input className={styles.inputField} name="partName" placeholder="Part Name" value={form.partName} onChange={handleChange} required />
-        <select
-          className={styles.inputField}
-          name="semana"
-          value={form.semana}
-          onChange={handleChange}
-        >
+
+        <select className={styles.inputField} name="semana" value={form.semana} onChange={handleChange}>
           <option value="" disabled>Week</option>
           {Array.from({ length: 52 }, (_, i) => (
-            <option key={i + 1} value={i + 1}>
-              Week {i + 1}
-            </option>
+            <option key={i + 1} value={i + 1}>Week {i + 1}</option>
           ))}
         </select>
-        <select
-          className={styles.inputField}
-          name="solicitante"
-          value={form.solicitante}
-          onChange={handleChange}
-        >
+
+        <select className={styles.inputField} name="solicitante" value={form.solicitante} onChange={handleChange}>
           <option value="" disabled>Solicitante</option>
           <option value="QUALIDADE">Qualidade</option>
           <option value="ENGENHARIA">Engenharia</option>
           <option value="FERRAMENTARIA">Ferramentaria</option>
           <option value="MANUTENÇÃO">Manutenção</option>
         </select>
-        <select
-          className={styles.inputField}
-          name="tecnico"
-          value={form.tecnico}
-          onChange={handleChange}
-        >
+
+        <select className={styles.inputField} name="tecnico" value={form.tecnico} onChange={handleChange}>
           <option value="" disabled>Técnico</option>
           <option value="izaac">Izaac</option>
           <option value="luis">Luís</option>
           <option value="matheus">Matheus</option>
         </select>
-        <select
-          className={styles.inputField}
-          name="turno"
-          value={form.turno}
-          onChange={handleChange}
-        >
+
+        <select className={styles.inputField} name="turno" value={form.turno} onChange={handleChange}>
           <option value="" disabled>Selecione o turno</option>
           <option value="1º TURNO">Primeiro Turno</option>
           <option value="2º TURNO">Segundo Turno</option>
           <option value="3º TURNO">Terceiro Turno</option>
           <option value="ADM">ADM</option>
         </select>
-        <select
-          className={styles.inputField}
-          name="equipamento"
-          value={form.equipamento}
-          onChange={handleChange}
-        >
+
+        <select className={styles.inputField} name="equipamento" value={form.equipamento} onChange={handleChange}>
           <option value="" disabled>Selecione o Equipamento</option>
           <option value="METRASCAN">MetraScan</option>
           <option value="CMM GLOBAL">CMM Global</option>
           <option value="PAQUÍMETRO">Paquímetro</option>
           <option value="MICRÔMETRO">Micrômetro</option>
         </select>
-        <select
-          className={styles.inputField}
-          name="motivo"
-          value={form.motivo}
-          onChange={handleChange}
-        >
+
+        <select className={styles.inputField} name="motivo" value={form.motivo} onChange={handleChange}>
           <option value="" disabled>Motivo da Medição</option>
           <option value="ANÁLISE DIMENSIONAL">Análise Dimensional</option>
           <option value="ACOMP PRODUÇÃO 1/400">Acomp produção 1/400</option>
@@ -158,27 +165,41 @@ export default function Home() {
           <option value="INSP DISPOSITIVO">Insp Dispositivo</option>
           <option value="REDUÇÃO BLANK">Redução do Blank</option>
           <option value="DISP SOLDA">Dispositivo de Solda</option>
-
         </select>
-        <textarea
-          className={`${styles.inputField} ${styles.fullWidth}`}
-          name="observacoes"
-          value={form.observacoes}
-          placeholder="Observações"
-          onChange={handleChange}
-        />
 
-        <button className={styles.button} type="submit">Enviar</button>
+        <textarea className={`${styles.inputField} ${styles.fullWidth}`} name="observacoes" value={form.observacoes} placeholder="Observações" onChange={handleChange} />
+
+        <button className={styles.button} type="submit">Salvar</button>
 
         {showModal && (
           <div className={styles.modalOverlay}>
             <div className={styles.modal}>
               <p>Seus dados foram salvos com sucesso!</p>
-              <p><strong>Número do Relatório:</strong> {numeroRelatorio}</p>
+              <p>
+                <strong>Número do Relatório:</strong> {numeroRelatorio}
+                <button
+                  type="button"
+                  onClick={() => navigator.clipboard.writeText(numeroRelatorio)}
+                  style={{
+                    marginLeft: '10px',
+                    padding: '4px 8px',
+                    fontSize: '0.9rem',
+                    cursor: 'pointer',
+                    backgroundColor: 'var(--primary-green)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px'
+                  }}
+                >
+                  Copiar
+                </button>
+
+              </p>
               <button onClick={resetForm}>OK</button>
             </div>
           </div>
         )}
+
       </form>
     </>
   );

@@ -10,7 +10,7 @@ export async function GET() {
     const fileBuffer = await fs.readFile(filePath);
     const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(worksheet); // Converte para JSON
+    const data = XLSX.utils.sheet_to_json(worksheet); //convert to JSON
 
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
