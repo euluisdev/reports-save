@@ -69,12 +69,10 @@ export async function POST(req) {
 
     const now = new Date();
     const dateFormated = now.toLocaleDateString('pt-BR');
-    const hourFormated = now.toLocaleTimeString('pt-BR', { hour12: false });
-    const dateHourFormated = `${dateFormated} - ${hourFormated}`;
 
     const novoRelatorio = {
       "Número de Relatório": numeroRelatorio,
-      "DataHoraCadastro": dateHourFormated,
+      "DataHoraCadastro": dateFormated, 
       "Part Number": formData.partNumber,
       "Part Name": formData.partName,
       "Semana": formData.semana,
