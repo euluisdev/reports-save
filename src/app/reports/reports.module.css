@@ -1,16 +1,16 @@
 .container {
-  padding: 1.5rem;
+  padding: 1rem;
   font-family: Arial, sans-serif;
   background-color: #121212;
   color: #e0e0e0;
   min-height: 100vh;
   transition: background-color 0.3s ease, color 0.3s ease;
-  margin-bottom: -4rem;
+  margin-bottom: 4rem;
 }
 
 .title {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   color: #ffffff;
 }
 
@@ -22,7 +22,7 @@
 
 .table tbody {
   display: block;
-  max-height: 600px;
+  max-height: 900px;
   overflow-y: auto;
 }
 
@@ -53,7 +53,7 @@
 
 .table th,
 .table td {
-  padding: 7px 3px;
+  padding: 5px 3px;
   text-align: center;
   font-size: 0.8rem;
 }
