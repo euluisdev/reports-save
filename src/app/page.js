@@ -171,36 +171,36 @@ export default function Home() {
 
         <button className={styles.button} type="submit">Salvar</button>
 
-        {showModal && (
-          <div className={styles.modalOverlay}>
-            <div className={styles.modal}>
-              <p>Seus dados foram salvos com sucesso!</p>
-              <p>
-                <strong>Número do Relatório:</strong> {numeroRelatorio}
-                <button
-                  type="button"
-                  onClick={() => navigator.clipboard.writeText(numeroRelatorio)}
-                  style={{
-                    marginLeft: '10px',
-                    padding: '4px 8px',
-                    fontSize: '0.9rem',
-                    cursor: 'pointer',
-                    backgroundColor: 'var(--primary-green)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px'
-                  }}
-                >
-                  Copiar
-                </button>
-
-              </p>
-              <button onClick={resetForm}>OK</button>
-            </div>
-          </div>
-        )}
-
       </form>
+
+      {showModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <p>Seus dados foram salvos com sucesso!</p>
+            <p>
+              <strong>Número do Relatório:</strong> {numeroRelatorio}
+              <button
+                type="button"
+                onClick={() => navigator.clipboard.writeText(numeroRelatorio)}
+                style={{
+                  marginLeft: '10px',
+                  padding: '4px 8px',
+                  fontSize: '0.9rem',
+                  cursor: 'pointer',
+                  backgroundColor: 'var(--primary-green)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px'
+                }}
+              >
+                Copiar
+              </button>
+
+            </p>
+            <button onClick={resetForm}>OK</button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
