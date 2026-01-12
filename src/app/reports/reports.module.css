@@ -17,7 +17,7 @@
 .tabelaContainer {
   max-height: 800px;
   border: 1px solid #2c2c2c;
-  border-radius: 8px;
+  border-radius: 1px;
 }
 
 .table tbody {
@@ -126,7 +126,7 @@
   background: transparent;
   border: none;
   color: #ccc;
-  font-size: 1rem;
+  font-size: 0.8rem;
   cursor: pointer;
   margin-left: 0.5rem;
   transition: color 0.2s ease;

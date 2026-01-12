@@ -69,7 +69,7 @@ export default function VisualizarDados() {
     return false;
   });
 
-  const ultimos30 = dadosFiltrados.slice(-30);
+  const ultimos30 = dadosFiltrados.slice(-50);
 
   if (carregando) return <p>Carregando...</p>;
 

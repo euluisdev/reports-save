@@ -72,6 +72,8 @@ export default function Home() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (showModal) return;
+
     const { partNumber, partName, semana, solicitante, tecnico, turno, equipamento, motivo } = form;
 
     if (
@@ -97,6 +99,25 @@ export default function Home() {
     const result = await response.json();
     setNumeroRelatorio(result.numeroRelatorio);
     setShowModal(true);
+  };
+
+  const copiarRelatorio = (texto) => {
+    try {
+      if (navigator?.clipboard?.writeText) {
+        navigator.clipboard.writeText(texto);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = texto;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+    } catch (err) {
+      console.error("Erro ao copiar:", err);
+    }
   };
 
   return (
@@ -181,7 +202,7 @@ export default function Home() {
               <strong>Número do Relatório:</strong> {numeroRelatorio}
               <button
                 type="button"
-                onClick={() => navigator.clipboard.writeText(numeroRelatorio)}
+                onClick={() => copiarRelatorio(numeroRelatorio)}
                 style={{
                   marginLeft: '10px',
                   padding: '4px 8px',
