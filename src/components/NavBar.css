@@ -16,12 +16,6 @@
   align-items: center;
 }
 
-.logo {
-  font-size: 1.25rem;
-  font-weight: bold;
-  letter-spacing: 3px;
-}
-
 .nav-links a {
   margin-left: 5rem;
   text-decoration: none;

@@ -60,14 +60,18 @@ export default function GraficosPage() {
       return numA - numB;
     });
 
-  const generateColors = (num) => {
-    const colors = [];
-    for (let i = 0; i < num; i++) {
-      const hue = Math.floor((360 / num) * i);
-      colors.push(`hsl(${hue}, 70%, 50%)`);
+
+  const stringToColor = (str) => {
+    let hash = 0;
+
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
-    return colors;
+
+    const hue = Math.abs(hash) % 360;
+    return `hsl(${hue}, 65%, 45%)`;
   };
+
 
   const labelsMotivo = Object.keys(contagemMotivo);
   const valoresMotivo = Object.values(contagemMotivo);
@@ -78,12 +82,13 @@ export default function GraficosPage() {
     datasets: [
       {
         data: valoresMotivo,
-        backgroundColor: generateColors(labelsMotivo.length),
+        backgroundColor: labelsMotivo.map(label => stringToColor(label)),
       },
     ],
   };
 
   const pieOptions = {
+    devicePixelRatio: 3,
     plugins: {
       datalabels: {
         formatter: (value) => {
@@ -93,7 +98,7 @@ export default function GraficosPage() {
         color: '#fff',
         font: {
           weight: 'bold',
-          size: 14,
+          size: 13,
         },
       },
       legend: {
@@ -122,18 +127,29 @@ export default function GraficosPage() {
     labels: semanaEntries.map(entry => entry[0]),
     datasets: [
       {
-        label: 'Controles por Semana',
+        label: 'Controles / Semana',
         data: semanaEntries.map(entry => entry[1]),
         backgroundColor: '#219b11',
+        barThickness: 30,
+        barPercentage: 0.7,
       },
     ],
   };
 
   const barOptions = {
+    devicePixelRatio: 3,
     plugins: {
       tooltip: {
         callbacks: {
           label: context => `Controles: ${context.raw}`,
+        },
+      },
+      datalabels: {
+        color: 'white',
+        anchor: 'center',
+        align: 'center',
+        font: {
+          weight: 'bold',
         },
       },
     },
@@ -142,13 +158,17 @@ export default function GraficosPage() {
         beginAtZero: true,
         title: {
           display: true,
-          text: 'Quantidade de Controles',
+          text: 'CONTROLS',
         },
       },
       x: {
+        grid: {
+          display: false,
+          drawBorder: false
+        },
         title: {
           display: true,
-          text: 'Semana',
+          text: 'WEEK',
         },
       },
     },
@@ -166,12 +186,16 @@ export default function GraficosPage() {
     return `${dia} de ${mes} de ${ano}`;
   };
 
+  const obterAnoAtual = () => {
+    return new Date().getFullYear();
+  };
+
 
   const handleImprimirPDF = () => {
     const input = containerRef.current;
     if (!input) return;
 
-    html2canvas(input, { scale: 2 }).then(canvas => {
+    html2canvas(input, { scale: 3 }).then(canvas => {
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({
         orientation: 'portrait',
@@ -191,7 +215,14 @@ export default function GraficosPage() {
   return (
     <>
       <div ref={containerRef} className={styles.container}>
-        <h2 className={styles.title}>Quantidade de Medições X Motivos da Medição</h2>
+
+        <h3 className={styles.title}>
+          <img
+            src="/logo-ieb.png"
+            alt="Logo"
+            className={styles.logoIeb}
+          />CONTROLES REALIZADOS NA METROLOGIA EM {obterAnoAtual()}
+        </h3>
 
         <div className={styles.filtroContainer}>
           <label htmlFor="semanaSelect" className={styles.filtroLabel}>Filtrar por Semana:</label>
@@ -227,15 +258,18 @@ export default function GraficosPage() {
             </div>
           </div>
 
-          <h2 className={styles.titleTwo}>Controles por Semana</h2>
-          <Bar data={barData} options={barOptions} />
+          <h2 className={styles.titleTwo}></h2>
+          <div className={styles.barWrapper}>
+            <Bar data={barData} options={barOptions} />
+          </div>
+
         </div>
         <div className={styles.dataAtual}>Igarassu, {formatarDataAtual()}</div>
       </div>
       <div>
-      <button onClick={handleImprimirPDF} className={styles.btnPrint}>
-        Export PDF
-      </button>
+        <button onClick={handleImprimirPDF} className={styles.btnPrint}>
+          Export PDF
+        </button>
       </div>
     </>
   );
