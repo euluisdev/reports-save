@@ -2,6 +2,7 @@
 
 import styles from './page.module.css';
 import { useState, useEffect } from 'react';
+import { Copy } from "lucide-react"
 
 export default function Home() {
   const [form, setForm] = useState({
@@ -200,25 +201,19 @@ export default function Home() {
             <p>Seus dados foram salvos com sucesso!</p>
             <p>
               <strong>Número do Relatório:</strong> {numeroRelatorio}
-              <button
+              <button 
+                className={styles.buttonCopy}
                 type="button"
                 onClick={() => copiarRelatorio(numeroRelatorio)}
-                style={{
-                  marginLeft: '10px',
-                  padding: '4px 8px',
-                  fontSize: '0.9rem',
-                  cursor: 'pointer',
-                  backgroundColor: 'var(--primary-green)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px'
-                }}
               >
-                Copiar
+                <Copy />
               </button>
 
             </p>
-            <button onClick={resetForm}>OK</button>
+            <button 
+              onClick={resetForm}
+              className={styles.buttonOk}
+              >OK</button>
           </div>
         </div>
       )}

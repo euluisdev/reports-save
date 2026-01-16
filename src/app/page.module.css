@@ -168,7 +168,24 @@
   width: 90%;
 }
 
-.modal button {
+.buttonCopy {
+  margin-top: 1.5rem;
+  padding: 0.6rem 1.2rem;
+  background-color: var(--gray-medium);
+  border: none;
+  color: var(--white);
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.buttonCopy:hover {
+  background-color: var(--gray-medium);
+  color: var(--primary-green);
+}
+
+.buttonOk {
   margin-top: 1.5rem;
   padding: 0.6rem 1.2rem;
   background-color: var(--primary-green);
@@ -180,6 +197,6 @@
   transition: background-color 0.2s ease-in-out;
 }
 
-.modal button:hover {
+.buttonOk:hover {
   background-color: var(--primary-green-dark);
 }
