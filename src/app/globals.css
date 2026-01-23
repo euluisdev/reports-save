@@ -1,7 +1,7 @@
 :root {
   --primary-green: green;
-  --primary-green-light: #25d37d;
-  --primary-green-dark: #149c54;
+  --primary-green-light: green;
+  --primary-green-dark: green;
   --white: #ffffff;
   --white-muted: rgba(255, 255, 255, 0.8);
   --black: #121212;
@@ -13,9 +13,9 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --primary-green: #1fb36a;
-    --primary-green-light: #25d37d;
-    --primary-green-dark: #149c54;
+    --primary-green: green;
+    --primary-green-light: green;
+    --primary-green-dark: green;
     --white: #ffffff;
     --white-muted: rgba(255, 255, 255, 0.8);
     --black: #121212;

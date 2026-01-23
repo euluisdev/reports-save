@@ -45,17 +45,23 @@
   width: 100%;
   border-collapse: collapse;
   background-color: #1e1e1e;
-  border-radius: 8px;
+  border-radius: 1px;
   overflow: hidden;
   box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.table th,
-.table td {
-  padding: 5px 3px;
+.table th{
+  padding: 6px 3px;
   text-align: center;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
+}
+
+.table td {
+  padding: 3px 1px;
+  text-align: center;
+  font-size: 0.75rem;
+  text-transform: uppercase;
 }
 
 .table th {
@@ -135,6 +141,31 @@
 .clearButton:hover {
   color: #ff5555;
 }
+
+/*check box*/
+.numberReport {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkBox {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid #444;
+  display: inline-block;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checkBoxActive {
+  background-color: yellow;
+}
+
+
 
 
 

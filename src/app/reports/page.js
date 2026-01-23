@@ -22,6 +22,28 @@ export default function VisualizarDados() {
       String(date.getDate()).padStart(2, '0');
   }
 
+  async function toggleSelected(linha) {
+    const novoValor = !linha.Selecionado;
+
+    setDados((prev) =>
+      prev.map((item) =>
+        item["Número de Relatório"] === linha["Número de Relatório"]
+          ? { ...item, Selecionado: novoValor }
+          : item
+      )
+    );
+
+    await fetch('/api/selecionar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        numeroRelatorio: linha["Número de Relatório"],
+        selecionado: novoValor
+      })
+    });
+  }
+
+
   useEffect(() => {
     const buscarDados = async () => {
       try {
@@ -139,7 +161,14 @@ export default function VisualizarDados() {
             ) : (
               ultimos30.map((linha, index) => (
                 <tr key={index}>
-                  <td>{linha["Número de Relatório"]}</td>
+                  <td className={styles.numberReport}>
+                    <span
+                      className={`${styles.checkBox} ${linha.Selecionado ? styles.checkBoxActive : ''
+                        }`}
+                      onClick={() => toggleSelected(linha)}
+                    />
+                    {linha["Número de Relatório"]}
+                  </td>
                   <td>
                     {typeof linha["DataHoraCadastro"] === 'number'
                       ? excelSerialDateToJSDate(linha["DataHoraCadastro"])

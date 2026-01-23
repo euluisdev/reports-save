@@ -82,6 +82,7 @@ export async function POST(req) {
       "Equipamento": formData.equipamento,
       "Motivo": formData.motivo,
       "Observações": formData.observacoes || "",
+      "Selecionado": false,
     };
 
     existingData.push(novoRelatorio);
