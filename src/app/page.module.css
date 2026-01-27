@@ -67,6 +67,19 @@
   color: var(--white-muted);
 }
 
+.partNumberWrapper {
+  display: grid;
+  grid-template-columns: 1fr 70px;
+  gap: 0.5rem;
+}
+
+.qtdInput {
+  text-align: center;
+  padding: 0.6rem;
+}
+
+
+
 .button {
   width: 100%;
   padding: 0.9rem;
@@ -200,3 +213,4 @@
 .buttonOk:hover {
   background-color: var(--primary-green-dark);
 }
+

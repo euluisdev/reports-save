@@ -14,11 +14,14 @@ export default function Home() {
     turno: '',
     equipamento: '',
     motivo: '',
-    observacoes: ''
+    observacoes: '',
+    quantidade: 1,
   });
-  const [numeroRelatorio, setNumeroRelatorio] = useState(null);
+  const [numeroRelatorio, setNumeroRelatorio] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [saudacao, setSaudacao] = useState('');
+  const [copiado, setCopiado] = useState(null);
+
 
   useEffect(() => {
     const dataAtual = new Date();
@@ -61,7 +64,8 @@ export default function Home() {
       turno: '',
       equipamento: '',
       motivo: '',
-      observacoes: ''
+      observacoes: '',
+      quantidade: 1,
     });
     setShowModal(false);
   };
@@ -98,7 +102,7 @@ export default function Home() {
     });
 
     const result = await response.json();
-    setNumeroRelatorio(result.numeroRelatorio);
+    setNumeroRelatorio(result.numeros);
     setShowModal(true);
   };
 
@@ -116,10 +120,18 @@ export default function Home() {
         document.execCommand("copy");
         document.body.removeChild(textarea);
       }
+
+      setCopiado(texto);
+
+      setTimeout(() => {
+        setCopiado(null);
+      }, 2000);
+
     } catch (err) {
       console.error("Erro ao copiar:", err);
     }
   };
+
 
   return (
     <>
@@ -131,8 +143,37 @@ export default function Home() {
       </main>
 
       <form className={styles.formContainer} onSubmit={handleSubmit}>
-        <input className={styles.inputField} name="partNumber" placeholder="Part Number" value={form.partNumber} onChange={handleChange} required />
-        <input className={styles.inputField} name="partName" placeholder="Part Name" value={form.partName} onChange={handleChange} required />
+        <div className={styles.partNumberWrapper}>
+          <input
+            className={styles.inputField}
+            name="partNumber"
+            placeholder="Part Number"
+            value={form.partNumber}
+            onChange={handleChange}
+            required
+          />
+
+          <input
+            type="number"
+            name="quantidade"
+            min={1}
+            max={10}
+            className={`${styles.inputField} ${styles.qtdInput}`}
+            value={form.quantidade}
+            onChange={(e) =>
+              setForm({ ...form, quantidade: Number(e.target.value) })
+            }
+          />
+        </div>
+
+        <input
+          className={styles.inputField}
+          name="partName"
+          placeholder="Part Name"
+          value={form.partName}
+          onChange={handleChange}
+          required
+        />
 
         <select className={styles.inputField} name="semana" value={form.semana} onChange={handleChange}>
           <option value="" disabled>Week</option>
@@ -199,21 +240,28 @@ export default function Home() {
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
             <p>Seus dados foram salvos com sucesso!</p>
-            <p>
-              <strong>Número do Relatório:</strong> {numeroRelatorio}
-              <button 
-                className={styles.buttonCopy}
-                type="button"
-                onClick={() => copiarRelatorio(numeroRelatorio)}
-              >
-                <Copy />
-              </button>
+            <span>
+              <strong>Número do Relatório:</strong>
+              <ul>
+                {numeroRelatorio.map((num) => (
+                  <li key={num}>
+                    {num}
+                    <button
+                      className={styles.buttonCopy}
+                      type="button"
+                      onClick={() => copiarRelatorio(num)}
+                    >
+                      {copiado === num ? 'Copiado!' : <Copy />}
+                    </button>
 
-            </p>
-            <button 
+                  </li>
+                ))}
+              </ul>
+            </span>
+            <button
               onClick={resetForm}
               className={styles.buttonOk}
-              >OK</button>
+            >OK</button>
           </div>
         </div>
       )}

@@ -17,6 +17,7 @@ export async function POST(req) {
   try {
     const formData = await req.json();
     console.log(formData);
+    const quantidade = Number(formData.quantidade) || 1;
 
     let workbook;
     let worksheet;
@@ -65,27 +66,34 @@ export async function POST(req) {
       }
     });
 
-    const numeroRelatorio = `${prefixo}${String(maxNumero + 1).padStart(4, '0')}`;
+    /* const numeroRelatorio = `${prefixo}${String(maxNumero + 1).padStart(4, '0')}`; */
+    const numerosGerados = [];
+
 
     const now = new Date();
     const dateFormated = now.toLocaleDateString('pt-BR');
 
-    const novoRelatorio = {
-      "Número de Relatório": numeroRelatorio,
-      "DataHoraCadastro": dateFormated, 
-      "Part Number": formData.partNumber,
-      "Part Name": formData.partName,
-      "Semana": formData.semana,
-      "Solicitante": formData.solicitante,
-      "Técnico": formData.tecnico,
-      "Turno": formData.turno,
-      "Equipamento": formData.equipamento,
-      "Motivo": formData.motivo,
-      "Observações": formData.observacoes || "",
-      "Selecionado": false,
-    };
+    for (let i = 1; i <= quantidade; i++) {
+      const numeroAtual = `${prefixo}${String(maxNumero + i).padStart(4, '0')}`;
 
-    existingData.push(novoRelatorio);
+      const novoRelatorio = {
+        "Número de Relatório": numeroAtual,
+        "DataHoraCadastro": dateFormated,
+        "Part Number": formData.partNumber,
+        "Part Name": formData.partName,
+        "Semana": formData.semana,
+        "Solicitante": formData.solicitante,
+        "Técnico": formData.tecnico,
+        "Turno": formData.turno,
+        "Equipamento": formData.equipamento,
+        "Motivo": formData.motivo,
+        "Observações": formData.observacoes || "",
+        "Selecionado": false,
+      };
+
+      existingData.push(novoRelatorio);
+      numerosGerados.push(numeroAtual);
+    }
 
     const updatedSheet = XLSX.utils.json_to_sheet(existingData, { skipHeader: false });
     const updatedWorkbook = XLSX.utils.book_new();
@@ -94,7 +102,11 @@ export async function POST(req) {
     const updatedBuffer = XLSX.write(updatedWorkbook, { type: 'buffer', bookType: 'xlsx' });
     await fs.writeFile(filePath, updatedBuffer);
 
-    return new Response(JSON.stringify({ success: true, numeroRelatorio }), { status: 200 });
+    return new Response(
+      JSON.stringify({ success: true, numeros: numerosGerados }),
+      { status: 200 }
+    );
+
 
   } catch (error) {
     console.error("Erro ao salvar no Excel:", error);
