@@ -22,7 +22,10 @@ ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Le
 export default function GraficosPage() {
   const [dados, setDados] = useState([]);
   const [semanaSelecionada, setSemanaSelecionada] = useState('');
-  const containerRef = useRef(null);
+
+  // Refs separados para cada folha de impressão
+  const pieSheetRef = useRef(null);
+  const barSheetRef = useRef(null);
 
   useEffect(() => {
     fetch('/api/display')
@@ -31,6 +34,7 @@ export default function GraficosPage() {
       .catch(console.error);
   }, []);
 
+  // --- Contagem por semana (sem filtro, para o gráfico de barras) ---
   const contagemSemana = {};
   dados.forEach(item => {
     const semana = item.Semana?.trim();
@@ -39,7 +43,7 @@ export default function GraficosPage() {
     }
   });
 
-
+  // --- Contagem por motivo (com filtro de semana, para o pie) ---
   const contagemMotivo = {};
   dados
     .filter(item => {
@@ -53,6 +57,7 @@ export default function GraficosPage() {
       }
     });
 
+  // --- Semanas únicas ordenadas ---
   const semanasUnicas = [...new Set(dados.map(item => item.Semana?.trim()).filter(Boolean))]
     .sort((a, b) => {
       const numA = parseInt(a.replace(/\D/g, ''), 10);
@@ -60,19 +65,17 @@ export default function GraficosPage() {
       return numA - numB;
     });
 
-
+  // --- Gerador de cor a partir de string ---
   const stringToColor = (str) => {
     let hash = 0;
-
     for (let i = 0; i < str.length; i++) {
       hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
-
     const hue = Math.abs(hash) % 360;
     return `hsl(${hue}, 65%, 45%)`;
   };
 
-
+  // --- Dados do Pie ---
   const labelsMotivo = Object.keys(contagemMotivo);
   const valoresMotivo = Object.values(contagemMotivo);
   const total = valoresMotivo.reduce((sum, val) => sum + val, 0);
@@ -96,14 +99,9 @@ export default function GraficosPage() {
           return `${percent}%`;
         },
         color: '#fff',
-        font: {
-          weight: 'bold',
-          size: 13,
-        },
+        font: { weight: 'bold', size: 13 },
       },
-      legend: {
-        display: false,
-      },
+      legend: { display: false },
       tooltip: {
         callbacks: {
           label: (context) => {
@@ -117,6 +115,7 @@ export default function GraficosPage() {
     },
   };
 
+  // --- Dados da Bar ---
   const semanaEntries = Object.entries(contagemSemana).sort((a, b) => {
     const numA = parseInt(a[0].replace(/\D/g, ''), 10);
     const numB = parseInt(b[0].replace(/\D/g, ''), 10);
@@ -148,32 +147,22 @@ export default function GraficosPage() {
         color: 'white',
         anchor: 'center',
         align: 'center',
-        font: {
-          weight: 'bold',
-        },
+        font: { weight: 'bold' },
       },
     },
     scales: {
       y: {
         beginAtZero: true,
-        title: {
-          display: true,
-          text: 'CONTROLS',
-        },
+        title: { display: true, text: 'CONTROLS' },
       },
       x: {
-        grid: {
-          display: false,
-          drawBorder: false
-        },
-        title: {
-          display: true,
-          text: 'WEEK',
-        },
+        grid: { display: false, drawBorder: false },
+        title: { display: true, text: 'WEEK' },
       },
     },
   };
 
+  // --- Utilitários de data ---
   const formatarDataAtual = () => {
     const data = new Date();
     const dia = data.getDate();
@@ -186,42 +175,46 @@ export default function GraficosPage() {
     return `${dia} de ${mes} de ${ano}`;
   };
 
-  const obterAnoAtual = () => {
-    return new Date().getFullYear();
-  };
+  const obterAnoAtual = () => new Date().getFullYear();
 
-
-  const handleImprimirPDF = () => {
-    const input = containerRef.current;
+  // --- Função genérica para exportar um ref como PDF landscape A4 ---
+  const exportarPDF = (ref, nomeArquivo) => {
+    const input = ref.current;
     if (!input) return;
 
-    html2canvas(input, { scale: 3 }).then(canvas => {
+    html2canvas(input, { scale: 3, useCORS: true }).then(canvas => {
       const imgData = canvas.toDataURL('image/png');
+
       const pdf = new jsPDF({
-        orientation: 'portrait',
+        orientation: 'landscape',
         unit: 'pt',
-        format: 'a4',
+        format: 'a4',       // A4 landscape: ~841 x 595 pt
       });
 
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      const pdfWidth = pdf.internal.pageSize.getWidth();   // ~841
+      const pdfHeight = pdf.internal.pageSize.getHeight(); // ~595
 
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save('graficos.pdf');
+      const imgProps = pdf.getImageProperties(imgData);
+
+      // Fit imagem dentro da página mantendo proporção
+      const ratio = Math.min(pdfWidth / imgProps.width, pdfHeight / imgProps.height);
+      const imgW = imgProps.width * ratio;
+      const imgH = imgProps.height * ratio;
+
+      const x = (pdfWidth - imgW) / 2;
+      const y = (pdfHeight - imgH) / 2;
+
+      pdf.addImage(imgData, 'PNG', x, y, imgW, imgH);
+      pdf.save(nomeArquivo);
     });
   };
 
   return (
     <>
-      <div ref={containerRef} className={styles.container}>
-
+      <div ref={pieSheetRef} className={styles.sheet}>
         <h3 className={styles.title}>
-          <img
-            src="/logo-ieb.png"
-            alt="Logo"
-            className={styles.logoIeb}
-          />CONTROLES REALIZADOS NA METROLOGIA EM {obterAnoAtual()}
+          <img src="/logo-ieb.png" alt="Logo" className={styles.logoIeb} />
+          CONTROLES REALIZADOS NA METROLOGIA EM {obterAnoAtual()}
         </h3>
 
         <div className={styles.filtroContainer}>
@@ -242,33 +235,54 @@ export default function GraficosPage() {
           </div>
         </div>
 
-        <div>
-          <div className={styles.graficoPizzaContainer}>
+        {/* Pie + Legenda */}
+        <div className={styles.graficoPizzaContainer}>
+          <div className={styles.pieWrapper}>
             <Pie data={pieData} options={pieOptions} />
-            <div className={styles.legenda}>
-              {pieData.labels.map((label, index) => (
-                <div key={label} className={styles.legendaItem}>
-                  <span
-                    className={styles.corQuadrado}
-                    style={{ backgroundColor: pieData.datasets[0].backgroundColor[index] }}
-                  ></span>
-                  <span>{label}</span>
-                </div>
-              ))}
-            </div>
           </div>
 
-          <h2 className={styles.titleTwo}></h2>
-          <div className={styles.barWrapper}>
-            <Bar data={barData} options={barOptions} />
+          <div className={styles.legenda}>
+            {pieData.labels.map((label, index) => (
+              <div key={label} className={styles.legendaItem}>
+                <span
+                  className={styles.corQuadrado}
+                  style={{ backgroundColor: pieData.datasets[0].backgroundColor[index] }}
+                ></span>
+                <span>{label}</span>
+              </div>
+            ))}
           </div>
-
         </div>
+
+
         <div className={styles.dataAtual}>Igarassu, {formatarDataAtual()}</div>
       </div>
-      <div>
-        <button onClick={handleImprimirPDF} className={styles.btnPrint}>
-          Export PDF
+
+      {/* Botão exportar Pie */}
+      <div className={styles.btnRow}>
+        <button onClick={() => exportarPDF(pieSheetRef, 'grafico-pie.pdf')} className={styles.btnPrint}>
+          Export PDF — Pie Chart
+        </button>
+      </div>
+
+      {/* ════════════ FOLHA 2 — BAR CHART ════════════ */}
+      <div ref={barSheetRef} className={styles.sheet}>
+        <h3 className={styles.title}>
+          <img src="/logo-ieb.png" alt="Logo" className={styles.logoIeb} />
+          CONTROLES REALIZADOS NA METROLOGIA EM {obterAnoAtual()}
+        </h3>
+
+        <div className={styles.barWrapper}>
+          <Bar data={barData} options={barOptions} />
+        </div>
+
+        <div className={styles.dataAtual}>Igarassu, {formatarDataAtual()}</div>
+      </div>
+
+      {/* Botão exportar Bar */}
+      <div className={styles.btnRow}>
+        <button onClick={() => exportarPDF(barSheetRef, 'grafico-bar.pdf')} className={styles.btnPrint}>
+          Export PDF — Bar Chart
         </button>
       </div>
     </>
