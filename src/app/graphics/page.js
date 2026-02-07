@@ -90,16 +90,18 @@ export default function GraficosPage() {
     ],
   };
 
-  const pieOptions = {
+  const pieOptionsPercent = {
     devicePixelRatio: 3,
     plugins: {
       datalabels: {
         formatter: (value) => {
           const percent = ((value / total) * 100).toFixed(1);
-          return `${percent}%`;
+          return `(${percent}%)`;
         },
         color: '#fff',
-        font: { weight: 'bold', size: 13 },
+        font: { weight: 'bold', size: 12 },
+        anchor: 'end',
+        align: 'start',
       },
       legend: { display: false },
       tooltip: {
@@ -114,6 +116,21 @@ export default function GraficosPage() {
       },
     },
   };
+  const pieOptionsValor = {
+    devicePixelRatio: 3,
+    plugins: {
+      datalabels: {
+        formatter: (value) => value,
+        color: '#fff',
+        font: { weight: 'bold', size: 12 },
+        anchor: 'end',
+        align: 'start',
+      },
+      legend: { display: false },
+    },
+  };
+
+
 
   // --- Dados da Bar ---
   const semanaEntries = Object.entries(contagemSemana).sort((a, b) => {
@@ -238,7 +255,12 @@ export default function GraficosPage() {
         {/* Pie + Legenda */}
         <div className={styles.graficoPizzaContainer}>
           <div className={styles.pieWrapper}>
-            <Pie data={pieData} options={pieOptions} />
+            <h4 className={styles.subTitle}>Percentual</h4>
+            <Pie data={pieData} options={pieOptionsPercent} />
+          </div>
+
+          <div className={styles.pieWrapper}>
+            <Pie data={pieData} options={pieOptionsValor} />
           </div>
 
           <div className={styles.legenda}>
@@ -247,12 +269,13 @@ export default function GraficosPage() {
                 <span
                   className={styles.corQuadrado}
                   style={{ backgroundColor: pieData.datasets[0].backgroundColor[index] }}
-                ></span>
+                />
                 <span>{label}</span>
               </div>
             ))}
           </div>
         </div>
+
 
 
         <div className={styles.dataAtual}>Igarassu, {formatarDataAtual()}</div>
