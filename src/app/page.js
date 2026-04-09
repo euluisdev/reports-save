@@ -22,6 +22,14 @@ export default function Home() {
   const [saudacao, setSaudacao] = useState('');
   const [copiado, setCopiado] = useState(null);
 
+  const getWeekNumber = (date) => {
+    const data = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const diaSemana = data.getUTCDay() || 7;
+    data.setUTCDate(data.getUTCDate() + 4 - diaSemana);
+    const inicioAno = new Date(Date.UTC(data.getUTCFullYear(), 0, 1));
+    const semana = Math.ceil((((data - inicioAno) / 86400000) + 1) / 7);
+    return semana;
+  };
 
   useEffect(() => {
     const dataAtual = new Date();
@@ -36,7 +44,14 @@ export default function Home() {
       .toLocaleDateString('pt-BR', opcoes)
       .replace('.', '');
 
-    const mensagemCompleta = `${saudacaoHora}! Hoje é ${dataFormatada}`;
+    const semanaAtual = getWeekNumber(dataAtual);
+
+    setForm((prev) => ({
+      ...prev,
+      semana: semanaAtual
+    }));
+
+    const mensagemCompleta = `${saudacaoHora}! Hoje é ${dataFormatada} | Week ${semanaAtual}`;
 
     let index = 0;
     let textoParcial = '';
@@ -55,10 +70,12 @@ export default function Home() {
   }, []);
 
   const resetForm = () => {
+    const semanaAtual = getWeekNumber(new Date());
+
     setForm({
       partNumber: '',
       partName: '',
-      semana: '',
+      semana: semanaAtual,
       solicitante: '',
       tecnico: '',
       turno: '',
