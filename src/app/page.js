@@ -203,8 +203,10 @@ export default function Home() {
           <option value="" disabled>Solicitante</option>
           <option value="QUALIDADE">Qualidade</option>
           <option value="ENGENHARIA">Engenharia</option>
+          <option value="DESENVOLVIMENTO">Desenvolvimento</option>
           <option value="FERRAMENTARIA">Ferramentaria</option>
           <option value="MANUTENÇÃO">Manutenção</option>
+          <option value="PRODUÇÃO">Produção</option>
         </select>
 
         <select className={styles.inputField} name="tecnico" value={form.tecnico} onChange={handleChange}>

@@ -23,7 +23,7 @@ export default function GraficosPage() {
   const [dados, setDados] = useState([]);
   const [semanaSelecionada, setSemanaSelecionada] = useState('');
 
-  // Refs separados para cada folha de impressão
+  //refs separados para cada folha de impressão
   const pieSheetRef = useRef(null);
   const barSheetRef = useRef(null);
 
@@ -34,7 +34,7 @@ export default function GraficosPage() {
       .catch(console.error);
   }, []);
 
-  // --- Contagem por semana (sem filtro, para o gráfico de barras) ---
+  //contagem por semana
   const contagemSemana = {};
   dados.forEach(item => {
     const semana = item.Semana?.trim();
@@ -43,7 +43,7 @@ export default function GraficosPage() {
     }
   });
 
-  // --- Contagem por motivo (com filtro de semana, para o pie) ---
+  //contagem por motivo
   const contagemMotivo = {};
   dados
     .filter(item => {
@@ -57,7 +57,7 @@ export default function GraficosPage() {
       }
     });
 
-  // --- Semanas únicas ordenadas ---
+  //semanas únicas ordenadas
   const semanasUnicas = [...new Set(dados.map(item => item.Semana?.trim()).filter(Boolean))]
     .sort((a, b) => {
       const numA = parseInt(a.replace(/\D/g, ''), 10);
@@ -65,7 +65,7 @@ export default function GraficosPage() {
       return numA - numB;
     });
 
-  // --- Gerador de cor a partir de string ---
+  //gerador de cor a partir de string
   const stringToColor = (str) => {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -75,7 +75,7 @@ export default function GraficosPage() {
     return `hsl(${hue}, 65%, 45%)`;
   };
 
-  // --- Dados do Pie ---
+  //dados do Pie
   const labelsMotivo = Object.keys(contagemMotivo);
   const valoresMotivo = Object.values(contagemMotivo);
   const total = valoresMotivo.reduce((sum, val) => sum + val, 0);
@@ -132,7 +132,7 @@ export default function GraficosPage() {
 
 
 
-  // --- Dados da Bar ---
+  //dados da Bar
   const semanaEntries = Object.entries(contagemSemana).sort((a, b) => {
     const numA = parseInt(a[0].replace(/\D/g, ''), 10);
     const numB = parseInt(b[0].replace(/\D/g, ''), 10);
@@ -179,7 +179,7 @@ export default function GraficosPage() {
     },
   };
 
-  // --- Utilitários de data ---
+  //utilitários de data
   const formatarDataAtual = () => {
     const data = new Date();
     const dia = data.getDate();
@@ -194,7 +194,7 @@ export default function GraficosPage() {
 
   const obterAnoAtual = () => new Date().getFullYear();
 
-  // --- Função genérica para exportar um ref como PDF landscape A4 ---
+  //função genérica para exportar um ref como PDF landscape A4
   const exportarPDF = (ref, nomeArquivo) => {
     const input = ref.current;
     if (!input) return;
@@ -205,15 +205,15 @@ export default function GraficosPage() {
       const pdf = new jsPDF({
         orientation: 'landscape',
         unit: 'pt',
-        format: 'a4',       // A4 landscape: ~841 x 595 pt
+        format: 'a4',       //A4 landscape: ~841 x 595 pt
       });
 
-      const pdfWidth = pdf.internal.pageSize.getWidth();   // ~841
-      const pdfHeight = pdf.internal.pageSize.getHeight(); // ~595
+      const pdfWidth = pdf.internal.pageSize.getWidth();   //~841
+      const pdfHeight = pdf.internal.pageSize.getHeight(); //~595
 
       const imgProps = pdf.getImageProperties(imgData);
 
-      // Fit imagem dentro da página mantendo proporção
+      //fit imagem dentro da página mantendo proporção
       const ratio = Math.min(pdfWidth / imgProps.width, pdfHeight / imgProps.height);
       const imgW = imgProps.width * ratio;
       const imgH = imgProps.height * ratio;
@@ -235,14 +235,14 @@ export default function GraficosPage() {
         </h3>
 
         <div className={styles.filtroContainer}>
-          <label htmlFor="semanaSelect" className={styles.filtroLabel}>Filtrar por Semana:</label>
+          <label htmlFor="semanaSelect" className={styles.filtroLabel}></label>
           <select
             id="semanaSelect"
             className={styles.filtroSelect}
             value={semanaSelecionada}
             onChange={e => setSemanaSelecionada(e.target.value)}
           >
-            <option value="">Todas</option>
+            <option value="">ALL WEEK</option>
             {semanasUnicas.map(semana => (
               <option key={semana} value={semana}>Week {semana}</option>
             ))}

@@ -97,9 +97,10 @@
   background-color: #111;
   transition: border-color 0.3s, box-shadow 0.3s;
   outline: none;
-  max-width: 220px;
-  width: 100%;
+  max-width: 150px;
+  width: 100%;  
   color: #219b11;
+  text-align: center;
 }
 
 .filtroSelect:hover {
