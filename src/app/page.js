@@ -48,7 +48,7 @@ export default function Home() {
 
     setForm((prev) => ({
       ...prev,
-      semana: semanaAtual
+      semana: String(semanaAtual)
     }));
 
     const mensagemCompleta = `${saudacaoHora}! Hoje é ${dataFormatada} | Week ${semanaAtual}`;
@@ -75,7 +75,7 @@ export default function Home() {
     setForm({
       partNumber: '',
       partName: '',
-      semana: semanaAtual,
+      semana: String(semanaAtual),
       solicitante: '',
       tecnico: '',
       turno: '',
