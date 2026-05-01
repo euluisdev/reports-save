@@ -213,7 +213,7 @@ export default function Home() {
           <option value="" disabled>Técnico</option>
           <option value="izaac">Izaac</option>
           <option value="luis">Luís</option>
-          <option value="matheus">Matheus</option>
+          <option value="vinicius">Vinicius (aprendiz)</option>
         </select>
 
         <select className={styles.inputField} name="turno" value={form.turno} onChange={handleChange}>
