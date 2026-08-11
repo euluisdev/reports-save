@@ -133,11 +133,16 @@ export default function GraficosPage() {
 
 
   //dados da Bar
-  const semanaEntries = Object.entries(contagemSemana).sort((a, b) => {
-    const numA = parseInt(a[0].replace(/\D/g, ''), 10);
-    const numB = parseInt(b[0].replace(/\D/g, ''), 10);
-    return numA - numB;
-  });
+  const LIMITE_SEMANAS = 30;
+
+  const semanaEntries = Object.entries(contagemSemana)
+    .sort((a, b) => {
+      const numA = parseInt(a[0].replace(/\D/g, ''), 10);
+      const numB = parseInt(b[0].replace(/\D/g, ''), 10);
+      return numA - numB;
+    })
+    .slice(-LIMITE_SEMANAS);
+
 
   const barData = {
     labels: semanaEntries.map(entry => entry[0]),
@@ -146,7 +151,7 @@ export default function GraficosPage() {
         label: 'Controles / Semana',
         data: semanaEntries.map(entry => entry[1]),
         backgroundColor: '#219b11',
-        barThickness: 30,
+        barThickness: 27,
         barPercentage: 0.7,
       },
     ],
